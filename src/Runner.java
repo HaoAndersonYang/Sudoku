@@ -6,6 +6,7 @@ public class Runner {
         // Basic Back track solver
         SudokuSolver BBTS = new BasicBackTrackSolver(board.length);
         SudokuSolver PBTS = new PreprocessBackTrackSolver(board.length);
+        System.out.println(((PreprocessBackTrackSolver) PBTS).hasUniqueSolution(board));
         io.outputSolution(solveSudoku(board, PBTS));
     }
 
