@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 public class PreprocessBackTrackSolver extends SudokuSolver {
 
+    private int solutionCount = 0;//Counting the number of solutions.
+
 
     public PreprocessBackTrackSolver(int boardSize) {
         this.boardSize = boardSize;
@@ -10,6 +12,11 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
 
     public int[][] solve(int[][] board) {
         return backTrackSolve(preProcess(board));
+    }
+
+    public boolean hasUniqueSolution(int[][] board) {
+        countNumberofSolution(preProcess(board));
+        return solutionCount == 1;
     }
 
     private GameInformatonContainer preProcess(int[][] board) {
@@ -214,27 +221,32 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
         return null;
     }
 
-    public int findUniqueSolution(GameInformatonContainer gic, int solutionCount) {
+    public int countNumberofSolution(GameInformatonContainer gic) {
+        if (solutionCount > 1) {
+            return -1;
+        }
         if (gic == null) {
             return 0;
         }
         int i, j;
         int[] zeropos = findNextZero(gic.board);
         if (zeropos == null) {
-            return 0;
+            return 1;
         }
         i = zeropos[0];
         j = zeropos[1];
         for (int k = 1; k <= boardSize; k++) {
-//            System.out.println(i + " " + j + " " + k + " " + gic.possibleVals[k][i][j]);
             if (gic.possibleVals[k][i][j] != 1) {
                 gic.board[i][j] = k;
                 if (checkConsistent(gic.board, i, j)) {
                     GameInformatonContainer next = inference(gic, new int[]{i, j});
                     if (next != null) {
-                        int nextStep = findUniqueSolution(next, solutionCount);
+                        int nextStep = countNumberofSolution(next);
                         if (nextStep != 0) {
-                            return solutionCount + 1;
+                            solutionCount += 1;
+                        }
+                        if (solutionCount > 1) {
+                            return -1;
                         }
                     }
                     gic.board[i][j] = 0;
