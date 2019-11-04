@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -6,6 +7,8 @@ import java.util.Collections;
  */
 public class PuzzleGenerator {
 
+    private int[][] solution;
+    private int[][] puzzle;
 
     public PuzzleGenerator() {
     }
@@ -15,21 +18,24 @@ public class PuzzleGenerator {
         return generatePuzzlefromBoard(board);
     }
 
+    public int[][] getSolution() {
+        return solution;
+    }
 
     public int[][] generateCompleteBoard() {
-        int[][] board = new int[9][9];
+        solution = new int[9][9];
         for (int i = 0; i < 3; i++) {
             ArrayList<Integer> randomSequence = generateRandomSequence();
             for (int j = 3 * i; j < 3 + 3 * i; j++) {
                 for (int k = 3 * i; k < 3 + 3 * i; k++) {
-                    board[j][k] = randomSequence.get(0);
+                    solution[j][k] = randomSequence.get(0);
                     randomSequence.remove(0);
                 }
             }
         }
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
-        board = PBTS.solve(board);
-        return board;
+        solution = PBTS.solve(solution);
+        return solution;
     }
 
     public void printArray(int[][] array) {
@@ -42,19 +48,31 @@ public class PuzzleGenerator {
         }
     }
 
+    public int[][] getPuzzle() {
+        return puzzle;
+    }
+
+    public int[][] copyArray(int[][] input) {
+        int[][] copy = new int[input.length][];
+        for (int i = 0; i < 9; i++) {
+            copy[i] = Arrays.copyOf(input[i], input[i].length);
+        }
+        return copy;
+    }
 
     public int[][] generatePuzzlefromBoard(int[][] board) {
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
+        puzzle = copyArray(board);
         int temp, x, y;
         do {
             x = (int) (Math.random() * 9);
             y = (int) (Math.random() * 9);
-            temp = board[x][y];
-            board[x][y] = 0;
-        } while (PBTS.hasUniqueSolution(board));
+            temp = puzzle[x][y];
+            puzzle[x][y] = 0;
+        } while (PBTS.hasUniqueSolution(puzzle));
 //        System.out.println("*************PUZZLE*********");
-        board[x][y] = temp;
-        return board;
+        puzzle[x][y] = temp;
+        return puzzle;
     }
 
 
