@@ -213,4 +213,36 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
         }
         return null;
     }
+
+    public int findUniqueSolution(GameInformatonContainer gic, int solutionCount) {
+        if (gic == null) {
+            return 0;
+        }
+        int i, j;
+        int[] zeropos = findNextZero(gic.board);
+        if (zeropos == null) {
+            return 0;
+        }
+        i = zeropos[0];
+        j = zeropos[1];
+        for (int k = 1; k <= boardSize; k++) {
+//            System.out.println(i + " " + j + " " + k + " " + gic.possibleVals[k][i][j]);
+            if (gic.possibleVals[k][i][j] != 1) {
+                gic.board[i][j] = k;
+                if (checkConsistent(gic.board, i, j)) {
+                    GameInformatonContainer next = inference(gic, new int[]{i, j});
+                    if (next != null) {
+                        int nextStep = findUniqueSolution(next, solutionCount);
+                        if (nextStep != 0) {
+                            return solutionCount + 1;
+                        }
+                    }
+                    gic.board[i][j] = 0;
+                } else {
+                    gic.board[i][j] = 0;
+                }
+            }
+        }
+        return 0;
+    }
 }
