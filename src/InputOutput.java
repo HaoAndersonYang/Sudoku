@@ -12,7 +12,6 @@ public class InputOutput {
         inputFile = new File(inputFilename);
         outputFilename = fileName.substring(0, fileName.length() - 4) + "Solution.txt";
 //        System.out.println(outputFilename);
-
     }
 
     public int[][] getBoard() {
