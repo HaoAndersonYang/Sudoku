@@ -6,7 +6,13 @@ public class Runner {
         // Basic Back track solver
         SudokuSolver BBTS = new BasicBackTrackSolver(board.length);
         SudokuSolver PBTS = new PreprocessBackTrackSolver(board.length);
+        long startTime = System.currentTimeMillis();
         System.out.println(((PreprocessBackTrackSolver) PBTS).hasUniqueSolution(board));
+        long endTime = System.currentTimeMillis();
+        System.out.println("Unique Solution execution time in Milliseconds: " + (endTime - startTime));
+
+
+
         io.outputSolution(solveSudoku(board, PBTS));
     }
 

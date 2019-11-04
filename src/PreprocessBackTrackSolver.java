@@ -242,7 +242,7 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
                     GameInformatonContainer next = inference(gic, new int[]{i, j});
                     if (next != null) {
                         int nextStep = countNumberofSolution(next);
-                        if (nextStep != 0) {
+                        if (nextStep == 1) {
                             solutionCount += 1;
                         }
                         if (solutionCount > 1) {
