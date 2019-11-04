@@ -2,18 +2,10 @@ public class Runner {
 
     public static void main(String[] args) {
         PuzzleGenerator pg = new PuzzleGenerator();
-        pg.generate();
+        pg.generatePuzzle();
 
 
 
-
-
-
-
-
-
-
-//
 //        InputOutput io = new InputOutput(args[0]);
 //        int[][] board = io.getBoard();
 //        // Basic Back track solver

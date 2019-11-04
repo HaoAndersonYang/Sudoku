@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Generate 9-by-9 puzzle
@@ -12,7 +10,13 @@ public class PuzzleGenerator {
     public PuzzleGenerator() {
     }
 
-    public int[][] generate() {
+    public int[][] generatePuzzle() {
+        int[][] board = generateCompleteBoard();
+        return generatePuzzlefromBoard(board);
+    }
+
+
+    public int[][] generateCompleteBoard() {
         int[][] board = new int[9][9];
         for (int i = 0; i < 3; i++) {
             ArrayList<Integer> randomSequence = generateRandomSequence();
@@ -23,12 +27,8 @@ public class PuzzleGenerator {
                 }
             }
         }
-        printArray(board);
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
         board = PBTS.solve(board);
-        System.out.println("solution");
-        printArray(board);
-
         return board;
     }
 
@@ -41,6 +41,22 @@ public class PuzzleGenerator {
             System.out.println();
         }
     }
+
+
+    public int[][] generatePuzzlefromBoard(int[][] board) {
+        PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
+        int temp, x, y;
+        do {
+            x = (int) (Math.random() * 9);
+            y = (int) (Math.random() * 9);
+            temp = board[x][y];
+            board[x][y] = 0;
+        } while (PBTS.hasUniqueSolution(board));
+//        System.out.println("*************PUZZLE*********");
+        board[x][y] = temp;
+        return board;
+    }
+
 
     private ArrayList<Integer> generateRandomSequence() {
         ArrayList<Integer> randomSequence = new ArrayList<>();

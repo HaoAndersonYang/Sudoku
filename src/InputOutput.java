@@ -13,7 +13,7 @@ public class InputOutput {
         outputFilename = fileName.substring(0, fileName.length() - 4) + "Solution.txt";
 //        System.out.println(outputFilename);
     }
-
+    
     public int[][] getBoard() {
         try {
             Scanner s = new Scanner(inputFile);
