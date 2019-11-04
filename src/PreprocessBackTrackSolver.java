@@ -15,6 +15,7 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
     }
 
     public boolean hasUniqueSolution(int[][] board) {
+        solutionCount = 0;
         countNumberofSolution(preProcess(board));
         return solutionCount == 1;
     }
@@ -56,7 +57,7 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
 
         GameInformatonContainer gic = new GameInformatonContainer(board, checked, valCount, possibleVals);
         gic = inference(gic, new int[]{0, 0});
-        System.out.println("Finished PreProcessing");
+//        System.out.println("Finished PreProcessing");
         return gic;
     }
 
@@ -231,6 +232,7 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
         int i, j;
         int[] zeropos = findNextZero(gic.board);
         if (zeropos == null) {
+            solutionCount += 1;
             return 1;
         }
         i = zeropos[0];
@@ -241,10 +243,7 @@ public class PreprocessBackTrackSolver extends SudokuSolver {
                 if (checkConsistent(gic.board, i, j)) {
                     GameInformatonContainer next = inference(gic, new int[]{i, j});
                     if (next != null) {
-                        int nextStep = countNumberofSolution(next);
-                        if (nextStep != 0) {
-                            solutionCount += 1;
-                        }
+                        countNumberofSolution(next);
                         if (solutionCount > 1) {
                             return -1;
                         }
