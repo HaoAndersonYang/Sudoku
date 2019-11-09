@@ -30,8 +30,11 @@ public class Runner {
                     }
                     InputOutput io = new InputOutput(fileName);
                     int[][] board = io.getBoard();
+
                     PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(board.length);
-                    io.outputSolution(solveSudoku(board, PBTS));
+
+                    HumanSimulationSolver HSS = new HumanSimulationSolver(board.length);
+                    io.outputSolution(solveSudoku(board, HSS));
                     System.out.println();
                     System.out.println(commandLinePrompt);
                     break;
@@ -39,7 +42,6 @@ public class Runner {
                     System.out.println(enterFileName);
                     fileName = s.next();
                     PuzzleGenerator puzzleGenerator = new PuzzleGenerator();
-                    puzzleGenerator.generatePuzzle();
                     io = new InputOutput(fileName, 9);
                     io.outputPuzzle(puzzleGenerator.getPuzzle());
                     io.outputSolution(puzzleGenerator.getSolution());

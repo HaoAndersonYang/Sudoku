@@ -36,6 +36,14 @@ public class GameInformatonContainer {
         return new GameInformatonContainer(nb, nc, nv, np);
     }
 
+    public void initialize() {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                update(new int[]{i, j});
+            }
+        }
+
+    }
 
     public void update(int[] pos) {
         int i = pos[0];

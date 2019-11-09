@@ -80,8 +80,8 @@ public class SudokuSolver {
 //        }
 
         GameInformatonContainer gic = new GameInformatonContainer(board, checked, valCount, possibleVals);
-        gic = inference(gic, new int[]{0, 0});
-//        System.out.println("Finished PreProcessing");
+        gic.initialize();
+        //        System.out.println("Finished PreProcessing");
         return gic;
     }
 
