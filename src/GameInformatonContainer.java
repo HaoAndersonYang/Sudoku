@@ -42,7 +42,13 @@ public class GameInformatonContainer {
                 update(new int[]{i, j});
             }
         }
+    }
 
+    public void countImpossibleVals(int i, int j) {
+        impossibleValCount[i][j] = 0;
+        for (int k = 1; k <= 9; k++) {
+            impossibleValCount[i][j] += possibleVals[k][i][j];
+        }
     }
 
     public void update(int[] pos) {

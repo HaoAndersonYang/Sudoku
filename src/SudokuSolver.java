@@ -89,6 +89,7 @@ public class SudokuSolver {
     public GameInformatonContainer inference(GameInformatonContainer input, int[] pos) {
         GameInformatonContainer gic = input.clone();
         gic.update(pos);
+
         // Find next cell that has a certain value
         for (int p = 0; p < boardSize; p++) {
             for (int q = 0; q < boardSize; q++) {
