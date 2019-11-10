@@ -459,6 +459,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                 if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
                     String candidate = "";
                     for (int val = 1; val <= boardSize; val++) {
+                        if (nakedTripleChecked[val][0][row] == 1) {
+                            continue;
+                        }
                         if (gic.possibleVals[val][row][col] == 0) {
                             candidate += val;
                         }
@@ -489,6 +492,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                                     gic.countImpossibleVals(row, eliminateCol);
                                 }
                             }
+                            for (int val : candidateSet) {
+                                nakedTripleChecked[val][0][row] = 1;
+                            }
                             nakedTripleCount++;
                             return true;
                         }
@@ -504,6 +510,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                 if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
                     String candidate = "";
                     for (int val = 1; val <= boardSize; val++) {
+                        if (nakedTripleChecked[val][1][col] == 1) {
+                            continue;
+                        }
                         if (gic.possibleVals[val][row][col] == 0) {
                             candidate += val;
                         }
@@ -534,6 +543,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                                     gic.countImpossibleVals(eliminateRow, col);
                                 }
                             }
+                            for (int val : candidateSet) {
+                                nakedTripleChecked[val][1][col] = 1;
+                            }
                             nakedTripleCount++;
                             return true;
                         }
@@ -554,6 +566,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                         if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
                             String candidate = "";
                             for (int val = 1; val <= boardSize; val++) {
+                                if (nakedTripleChecked[val][2][i * 3 + j] == 1) {
+                                    continue;
+                                }
                                 if (gic.possibleVals[val][row][col] == 0) {
                                     candidate += val;
                                 }
@@ -600,6 +615,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                                         }
                                     }
                                 }
+                                for (int val : candidateSet) {
+                                    nakedTripleChecked[val][2][i * 3 + j] = 1;
+                                }
                                 nakedTripleCount++;
                                 return true;
                             }
@@ -618,43 +636,49 @@ public class HumanSimulationSolver extends SudokuSolver {
             int[] appearCount = new int[boardSize + 1];
             ArrayList<Integer> possible = new ArrayList<>();
             for (int val = 1; val <= boardSize; val++) {
-                if (hiddenDoubleChecked[val][0][row] == 1) {
+                if (hiddenTripleChecked[val][0][row] == 1) {
                     continue;
                 }
                 for (int col = 0; col < boardSize; col++) {
                     appearCount[val] += 1 - gic.possibleVals[val][row][col];
                 }
-                if (appearCount[val] == 2) {
+                if (appearCount[val] == 2 || appearCount[val] == 3) {
                     possible.add(val);
                 }
             }
             for (int val1 : possible) {
                 for (int val2 : possible) {
-                    if (val1 != val2) {
-                        int col1 = -1;
-                        int col2 = -1;
-                        for (int col = 0; col < boardSize; col++) {
-                            if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
-                                if (col1 == -1) {
-                                    col1 = col;
-                                } else {
-                                    col2 = col;
+                    for (int val3 : possible) {
+                        if (val1 != val2 && val1 != val3 && val3 != val2) {
+                            HashSet<Integer> colSet = new HashSet<>();
+                            for (int col = 0; col < boardSize; col++) {
+                                if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                    colSet.add(col);
+                                }
+                                if (gic.possibleVals[val3][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                    colSet.add(col);
+                                }
+                                if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val3][row][col] == 0) {
+                                    colSet.add(col);
                                 }
                             }
-                        }
-                        if (col2 != -1) {
-                            for (int val = 1; val <= boardSize; val++) {
-                                if (val != val1 && val != val2) {
-                                    gic.possibleVals[val][row][col1] = 1;
-                                    gic.possibleVals[val][row][col2] = 1;
+                            if (colSet.size() == 3) {
+                                for (int val = 1; val <= boardSize; val++) {
+                                    if (val != val1 && val != val2 && val != val3) {
+                                        for (int colindex : colSet) {
+                                            gic.possibleVals[val][row][colindex] = 1;
+                                        }
+                                    }
                                 }
+                                for (int colindex : colSet) {
+                                    gic.countImpossibleVals(row, colindex);
+                                }
+                                hiddenTripleChecked[val1][0][row] = 1;
+                                hiddenTripleChecked[val2][0][row] = 1;
+                                hiddenTripleChecked[val3][0][row] = 1;
+                                hiddenTripleCount++;
+                                return true;
                             }
-                            gic.countImpossibleVals(row, col1);
-                            gic.countImpossibleVals(row, col2);
-                            hiddenDoubleChecked[val1][0][row] = 1;
-                            hiddenDoubleChecked[val2][0][row] = 1;
-                            hiddenDoubleCount++;
-                            return true;
                         }
                     }
                 }
@@ -665,43 +689,49 @@ public class HumanSimulationSolver extends SudokuSolver {
             int[] appearCount = new int[boardSize + 1];
             ArrayList<Integer> possible = new ArrayList<>();
             for (int val = 1; val <= boardSize; val++) {
-                if (hiddenDoubleChecked[val][1][col] == 1) {
+                if (hiddenTripleChecked[val][1][col] == 1) {
                     continue;
                 }
                 for (int row = 0; row < boardSize; row++) {
                     appearCount[val] += 1 - gic.possibleVals[val][row][col];
                 }
-                if (appearCount[val] == 2) {
+                if (appearCount[val] == 2 || appearCount[val] == 3) {
                     possible.add(val);
                 }
             }
             for (int val1 : possible) {
                 for (int val2 : possible) {
-                    if (val1 != val2) {
-                        int row1 = -1;
-                        int row2 = -1;
-                        for (int row = 0; row < boardSize; row++) {
-                            if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
-                                if (row1 == -1) {
-                                    row1 = row;
-                                } else {
-                                    row2 = row;
+                    for (int val3 : possible) {
+                        if (val1 != val2 && val1 != val3 && val3 != val2) {
+                            HashSet<Integer> rowSet = new HashSet<>();
+                            for (int row = 0; row < boardSize; row++) {
+                                if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                    rowSet.add(row);
+                                }
+                                if (gic.possibleVals[val3][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                    rowSet.add(row);
+                                }
+                                if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val3][row][col] == 0) {
+                                    rowSet.add(row);
                                 }
                             }
-                        }
-                        if (row2 != -1) {
-                            for (int val = 1; val <= boardSize; val++) {
-                                if (val != val1 && val != val2) {
-                                    gic.possibleVals[val][row1][col] = 1;
-                                    gic.possibleVals[val][row2][col] = 1;
+                            if (rowSet.size() == 3) {
+                                for (int val = 1; val <= boardSize; val++) {
+                                    if (val != val1 && val != val2 && val != val3) {
+                                        for (int rowindex : rowSet) {
+                                            gic.possibleVals[val][rowindex][col] = 1;
+                                        }
+                                    }
                                 }
+                                for (int rowindex : rowSet) {
+                                    gic.countImpossibleVals(rowindex, col);
+                                }
+                                hiddenTripleChecked[val1][1][col] = 1;
+                                hiddenTripleChecked[val2][1][col] = 1;
+                                hiddenTripleChecked[val3][1][col] = 1;
+                                hiddenTripleCount++;
+                                return true;
                             }
-                            gic.countImpossibleVals(row1, col);
-                            gic.countImpossibleVals(row2, col);
-                            hiddenDoubleChecked[val1][1][col] = 1;
-                            hiddenDoubleChecked[val2][1][col] = 1;
-                            hiddenDoubleCount++;
-                            return true;
                         }
                     }
                 }
@@ -717,7 +747,7 @@ public class HumanSimulationSolver extends SudokuSolver {
                 int[] appearCount = new int[boardSize + 1];
                 ArrayList<Integer> possible = new ArrayList<>();
                 for (int val = 1; val <= boardSize; val++) {
-                    if (hiddenDoubleChecked[val][2][i * 3 + j] == 1) {
+                    if (hiddenTripleChecked[val][2][i * 3 + j] == 1) {
                         continue;
                     }
                     for (int row = initialRow; row < initialRow + gridSize; row++) {
@@ -725,43 +755,45 @@ public class HumanSimulationSolver extends SudokuSolver {
                             appearCount[val] += 1 - gic.possibleVals[val][row][col];
                         }
                     }
-                    if (appearCount[val] == 2) {
+                    if (appearCount[val] == 2 || appearCount[val] == 3) {
                         possible.add(val);
                     }
                 }
                 for (int val1 : possible) {
                     for (int val2 : possible) {
-                        if (val1 != val2) {
-                            int row1 = -1;
-                            int row2 = -1;
-                            int col1 = -1;
-                            int col2 = -1;
-                            for (int row = initialRow; row < initialRow + gridSize; row++) {
-                                for (int col = initialCol; col < initialCol + gridSize; col++) {
-                                    if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
-                                        if (col1 == -1) {
-                                            row1 = row;
-                                            col1 = col;
-                                        } else {
-                                            row2 = row;
-                                            col2 = col;
+                        for (int val3 : possible) {
+                            if (val1 != val2 && val1 != val3 && val3 != val2) {
+                                HashSet<String> indexSet = new HashSet<>();
+                                for (int row = initialRow; row < initialRow + gridSize; row++) {
+                                    for (int col = initialCol; col < initialCol + gridSize; col++) {
+                                        if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                            indexSet.add(row + "" + col);
+                                        }
+                                        if (gic.possibleVals[val3][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                            indexSet.add(row + "" + col);
+                                        }
+                                        if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val3][row][col] == 0) {
+                                            indexSet.add(row + "" + col);
                                         }
                                     }
                                 }
-                            }
-                            if (col2 != -1) {
-                                for (int val = 1; val <= boardSize; val++) {
-                                    if (val != val1 && val != val2) {
-                                        gic.possibleVals[val][row1][col1] = 1;
-                                        gic.possibleVals[val][row2][col2] = 1;
+                                if (indexSet.size() == 3) {
+                                    for (int val = 1; val <= boardSize; val++) {
+                                        if (val != val1 && val != val2 && val != val3) {
+                                            for (String index : indexSet) {
+                                                gic.possibleVals[val][index.charAt(0) - '0'][index.charAt(1) - '0'] = 1;
+                                            }
+                                        }
                                     }
+                                    for (String index : indexSet) {
+                                        gic.countImpossibleVals(index.charAt(0) - '0', index.charAt(1) - '0');
+                                    }
+                                    hiddenTripleChecked[val1][2][i * 3 + j] = 1;
+                                    hiddenTripleChecked[val2][2][i * 3 + j] = 1;
+                                    hiddenTripleChecked[val3][2][i * 3 + j] = 1;
+                                    hiddenTripleCount++;
+                                    return true;
                                 }
-                                gic.countImpossibleVals(row1, col1);
-                                gic.countImpossibleVals(row2, col2);
-                                hiddenDoubleChecked[val1][0][i * 3 + j] = 1;
-                                hiddenDoubleChecked[val2][0][i * 3 + j] = 1;
-                                hiddenDoubleCount++;
-                                return true;
                             }
                         }
                     }
@@ -860,8 +892,8 @@ public class HumanSimulationSolver extends SudokuSolver {
     public int[][] humanSolve() {
         if (tryStrategy(1))
             return gic.board;
-//        if (tryStrategy(2))
-//            return gic.board;
+        if (tryStrategy(2))
+            return gic.board;
         if (tryStrategy(3))
             return gic.board;
         return null;
@@ -903,7 +935,7 @@ public class HumanSimulationSolver extends SudokuSolver {
         ArrayList<Boolean> resultList = new ArrayList<>();
         switch (level) {
             case 3:
-//                resultList.add(hiddenTriple());
+                resultList.add(hiddenTriple());
                 resultList.add(nakedTriple());
             case 2:
                 resultList.add(hiddenDouble());

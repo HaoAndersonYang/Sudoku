@@ -34,7 +34,7 @@ public class Runner {
                     PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(board.length);
 
                     HumanSimulationSolver HSS = new HumanSimulationSolver(board.length);
-                    io.outputSolution(solveSudoku(board, HSS));
+                    io.outputSolution(solveSudoku(board, PBTS));
                     System.out.println();
                     System.out.println(commandLinePrompt);
                     break;
