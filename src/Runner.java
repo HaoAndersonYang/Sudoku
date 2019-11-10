@@ -32,9 +32,10 @@ public class Runner {
                     int[][] board = io.getBoard();
 
                     PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(board.length);
+//                    BasicBackTrackSolver BBTS = new BasicBackTrackSolver(board.length);
 
                     HumanSimulationSolver HSS = new HumanSimulationSolver(board.length);
-                    io.outputSolution(solveSudoku(board, PBTS));
+                    io.outputSolution(solveSudoku(board, HSS));
                     System.out.println();
                     System.out.println(commandLinePrompt);
                     break;
