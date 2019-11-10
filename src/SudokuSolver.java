@@ -116,6 +116,9 @@ public class SudokuSolver {
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
                 int val = array[i][j];
+                if (val==0){
+                    System.out.print("- ");
+                }
                 System.out.print(val + " ");
             }
             System.out.println();

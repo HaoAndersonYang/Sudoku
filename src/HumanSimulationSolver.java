@@ -456,36 +456,46 @@ public class HumanSimulationSolver extends SudokuSolver {
                     int colindex = -1;
                     for (int row = initialRow; row < initialRow + gridSize; row++) {
                         for (int col = initialCol; col < initialCol + gridSize; col++) {
+                            if (gic.checked[row][col] == 1) {
+                                continue;
+                            }
                             if (gic.possibleVals[val][row][col] == 0) {
                                 if (rowcount == 0) {
                                     rowcount++;
                                     colcount++;
                                     colindex = col;
                                     rowindex = row;
-                                } else if (row != rowindex) {
-                                    rowcount++;
-                                } else if (col != colindex) {
-                                    colcount++;
+                                } else {
+                                    if (row != rowindex) {
+                                        rowcount++;
+                                    }
+                                    if (col != colindex) {
+                                        colcount++;
+                                    }
                                 }
                             }
                         }
-
                     }
-                    if (rowcount == 1) {
+                    if (rowcount == 1 && colcount != 1) {
                         for (int k = 0; k < boardSize; k++) {
                             if (k < initialCol || k >= initialCol + gridSize) {
-                                gic.possibleVals[val][rowindex][k] = 1;
-                                gic.countImpossibleVals(rowindex, k);
+                                if (gic.board[rowindex][k] == 0) {
+                                    gic.possibleVals[val][rowindex][k] = 1;
+                                    gic.countImpossibleVals(rowindex, k);
+                                }
                             }
                         }
                         lockedCandidateChecked[i * 3 + j][val] = 1;
                         lockedCandidateCount++;
                         return true;
-                    } else if (colcount == 1) {
+                    }
+                    if (colcount == 1 && rowcount != 1) {
                         for (int k = 0; k < boardSize; k++) {
                             if (k < initialRow || k >= initialRow + gridSize) {
-                                gic.possibleVals[val][k][colindex] = 1;
-                                gic.countImpossibleVals(k, colindex);
+                                if (gic.board[k][colindex] == 0) {
+                                    gic.possibleVals[val][k][colindex] = 1;
+                                    gic.countImpossibleVals(k, colindex);
+                                }
                             }
                         }
                         lockedCandidateChecked[i * 3 + j][val] = 1;
@@ -497,6 +507,23 @@ public class HumanSimulationSolver extends SudokuSolver {
         }
         return false;
     }
+
+
+    public static String get2DArrayPrint(int[][] matrix) {
+        String output = new String();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 0) {
+                    output = output + ("-" + "\t");
+                } else {
+                    output = output + (matrix[i][j] + "\t");
+                }
+            }
+            output = output + "\n";
+        }
+        return output;
+    }
+
 
     public int[][] humanSolve() {
         if (tryStrategy(1))
@@ -512,8 +539,8 @@ public class HumanSimulationSolver extends SudokuSolver {
         StringBuilder sb = new StringBuilder();
         switch (level) {
             case 3:
-                sb.append("Hidden Triple Strategy Count: ").append(hiddenDoubleCount).append("\n");
-                sb.append("Naked Triple Strategy Count: ").append(nakedDoubleCount).append("\n");
+                sb.append("Hidden Triple Strategy Count: ").append(hiddenTripleCount).append("\n");
+                sb.append("Naked Triple Strategy Count: ").append(nakedTripleCount).append("\n");
             case 2:
                 sb.append("Hidden Double Strategy Count: ").append(hiddenDoubleCount).append("\n");
                 sb.append("Naked Double Strategy Count: ").append(nakedDoubleCount).append("\n");
@@ -523,9 +550,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                 sb.append("Naked Single Strategy Count: ").append(nakedSingleCount).append("\n");
             default:
                 boolean res = findNextZero(gic.board) == null;
+                System.out.println(sb.toString());
                 if (res) {
                     System.out.println("Solved by using up to LEVEL " + level + " Strategies.");
-                    System.out.println(sb.toString());
                 } else {
                     System.out.println("LEVEL " + level + " Strategies cannot solve the puzzle.");
                     printArray(gic.board);

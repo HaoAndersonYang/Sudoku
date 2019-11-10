@@ -57,6 +57,12 @@ public class GameInformatonContainer {
         int val = board[i][j];
         if (val != 0) {
             checked[i][j] = 1;
+            for (int k = 1; k < boardSize; k++) {
+                if (k != val) {
+                    possibleVals[k][i][j] = 1;
+                }
+            }
+            impossibleValCount[i][j] = boardSize - 1;
             for (int m = 0; m < boardSize; m++) {
                 //Check row
                 if (m != i) {
