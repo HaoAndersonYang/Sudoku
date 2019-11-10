@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HumanSimulationSolver extends SudokuSolver {
 
@@ -438,6 +440,336 @@ public class HumanSimulationSolver extends SudokuSolver {
         return false;
     }
 
+    private int[] setToArray(Set<Integer> input) {
+        int[] res = new int[input.size()];
+        int index = 0;
+        for (int i : input) {
+            res[index] = i;
+            index++;
+        }
+        return res;
+    }
+
+    private boolean nakedTriple() {
+//        System.out.println("NAKED TRIPLE");
+        //Row
+        for (int row = 0; row < boardSize; row++) {
+            HashMap<Integer, String> candidatemap = new HashMap<>();
+            for (int col = 0; col < boardSize; col++) {
+                if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
+                    String candidate = "";
+                    for (int val = 1; val <= boardSize; val++) {
+                        if (gic.possibleVals[val][row][col] == 0) {
+                            candidate += val;
+                        }
+                    }
+                    candidatemap.put(col, candidate);
+                }
+            }
+            int[] colArray = setToArray(candidatemap.keySet());
+            if (colArray.length < 3) {
+                continue;
+            }
+            for (int i = 0; i < colArray.length; i++) {
+                for (int j = i + 1; j < colArray.length; j++) {
+                    for (int k = j + 1; k < colArray.length; k++) {
+                        String candidates = candidatemap.get(colArray[i]);
+                        candidates += candidatemap.get(colArray[j]);
+                        candidates += candidatemap.get(colArray[k]);
+                        Set<Integer> candidateSet = new HashSet<>();
+                        for (char c : candidates.toCharArray()) {
+                            candidateSet.add(c - '0');
+                        }
+                        if (candidateSet.size() == 3) {
+                            for (int eliminateCol = 0; eliminateCol < boardSize; eliminateCol++) {
+                                if (eliminateCol != colArray[i] && eliminateCol != colArray[j] && eliminateCol != colArray[k]) {
+                                    for (int val : candidateSet) {
+                                        gic.possibleVals[val][row][eliminateCol] = 1;
+                                    }
+                                    gic.countImpossibleVals(row, eliminateCol);
+                                }
+                            }
+                            nakedTripleCount++;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Col
+        for (int col = 0; col < boardSize; col++) {
+            HashMap<Integer, String> candidatemap = new HashMap<>();
+            for (int row = 0; row < boardSize; row++) {
+                if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
+                    String candidate = "";
+                    for (int val = 1; val <= boardSize; val++) {
+                        if (gic.possibleVals[val][row][col] == 0) {
+                            candidate += val;
+                        }
+                    }
+                    candidatemap.put(row, candidate);
+                }
+            }
+            int[] rowArray = setToArray(candidatemap.keySet());
+            if (rowArray.length < 3) {
+                continue;
+            }
+            for (int i = 0; i < rowArray.length; i++) {
+                for (int j = i + 1; j < rowArray.length; j++) {
+                    for (int k = j + 1; k < rowArray.length; k++) {
+                        String candidates = candidatemap.get(rowArray[i]);
+                        candidates += candidatemap.get(rowArray[j]);
+                        candidates += candidatemap.get(rowArray[k]);
+                        Set<Integer> candidateSet = new HashSet<>();
+                        for (char c : candidates.toCharArray()) {
+                            candidateSet.add(c - '0');
+                        }
+                        if (candidateSet.size() == 3) {
+                            for (int eliminateRow = 0; eliminateRow < boardSize; eliminateRow++) {
+                                if (eliminateRow != rowArray[i] && eliminateRow != rowArray[j] && eliminateRow != rowArray[k]) {
+                                    for (int val : candidateSet) {
+                                        gic.possibleVals[val][eliminateRow][col] = 1;
+                                    }
+                                    gic.countImpossibleVals(eliminateRow, col);
+                                }
+                            }
+                            nakedTripleCount++;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Grid
+        int gridCount = boardSize / gridSize;
+        for (int i = 0; i < gridCount; i++) {
+            for (int j = 0; j < gridCount; j++) {
+                int initialRow = i * 3;
+                int initialCol = j * 3;
+                HashMap<String, String> candidatemap = new HashMap<>();
+                for (int row = initialRow; row < initialRow + gridSize; row++) {
+                    for (int col = initialCol; col < initialCol + gridSize; col++) {
+                        if (gic.impossibleValCount[row][col] == boardSize - 2 || gic.impossibleValCount[row][col] == boardSize - 3) {
+                            String candidate = "";
+                            for (int val = 1; val <= boardSize; val++) {
+                                if (gic.possibleVals[val][row][col] == 0) {
+                                    candidate += val;
+                                }
+                            }
+                            candidatemap.put(row + "" + col, candidate);
+                        }
+                    }
+                }
+                String[] indexArray = new String[candidatemap.keySet().size()];
+                int index = 0;
+                for (String str : candidatemap.keySet()) {
+                    indexArray[index] = str;
+                    index++;
+                }
+                if (indexArray.length < 3) {
+                    continue;
+                }
+                for (int p = 0; p < indexArray.length; p++) {
+                    for (int q = p + 1; q < indexArray.length; q++) {
+                        for (int k = q + 1; k < indexArray.length; k++) {
+                            String candidates = candidatemap.get(indexArray[p]);
+                            candidates += candidatemap.get(indexArray[q]);
+                            candidates += candidatemap.get(indexArray[k]);
+                            Set<Integer> candidateSet = new HashSet<>();
+                            for (char c : candidates.toCharArray()) {
+                                candidateSet.add(c - '0');
+                            }
+                            if (candidateSet.size() == 3) {
+                                int rowpos1 = indexArray[p].charAt(0) - '0';
+                                int rowpos2 = indexArray[q].charAt(1) - '0';
+                                int rowpos3 = indexArray[k].charAt(2) - '0';
+                                int colpos1 = indexArray[p].charAt(0) - '0';
+                                int colpos2 = indexArray[q].charAt(1) - '0';
+                                int colpos3 = indexArray[k].charAt(2) - '0';
+
+                                for (int eliminateRow = initialRow; eliminateRow < initialRow + gridSize; eliminateRow++) {
+                                    for (int eliminateCol = initialCol; eliminateCol < initialCol + gridSize; eliminateCol++) {
+                                        if ((eliminateRow != rowpos1 && eliminateRow != rowpos2 && eliminateRow != rowpos3) ||
+                                                (eliminateCol != colpos1 && eliminateCol != colpos2 && eliminateCol != colpos3)) {
+                                            for (int val : candidateSet) {
+                                                gic.possibleVals[val][eliminateRow][eliminateCol] = 1;
+                                            }
+                                            gic.countImpossibleVals(eliminateRow, eliminateCol);
+                                        }
+                                    }
+                                }
+                                nakedTripleCount++;
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hiddenTriple() {
+//        System.out.println("HIDDEN TRIPLE");
+        //Row
+        for (int row = 0; row < boardSize; row++) {
+            int[] appearCount = new int[boardSize + 1];
+            ArrayList<Integer> possible = new ArrayList<>();
+            for (int val = 1; val <= boardSize; val++) {
+                if (hiddenDoubleChecked[val][0][row] == 1) {
+                    continue;
+                }
+                for (int col = 0; col < boardSize; col++) {
+                    appearCount[val] += 1 - gic.possibleVals[val][row][col];
+                }
+                if (appearCount[val] == 2) {
+                    possible.add(val);
+                }
+            }
+            for (int val1 : possible) {
+                for (int val2 : possible) {
+                    if (val1 != val2) {
+                        int col1 = -1;
+                        int col2 = -1;
+                        for (int col = 0; col < boardSize; col++) {
+                            if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                if (col1 == -1) {
+                                    col1 = col;
+                                } else {
+                                    col2 = col;
+                                }
+                            }
+                        }
+                        if (col2 != -1) {
+                            for (int val = 1; val <= boardSize; val++) {
+                                if (val != val1 && val != val2) {
+                                    gic.possibleVals[val][row][col1] = 1;
+                                    gic.possibleVals[val][row][col2] = 1;
+                                }
+                            }
+                            gic.countImpossibleVals(row, col1);
+                            gic.countImpossibleVals(row, col2);
+                            hiddenDoubleChecked[val1][0][row] = 1;
+                            hiddenDoubleChecked[val2][0][row] = 1;
+                            hiddenDoubleCount++;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        //Col
+        for (int col = 0; col < boardSize; col++) {
+            int[] appearCount = new int[boardSize + 1];
+            ArrayList<Integer> possible = new ArrayList<>();
+            for (int val = 1; val <= boardSize; val++) {
+                if (hiddenDoubleChecked[val][1][col] == 1) {
+                    continue;
+                }
+                for (int row = 0; row < boardSize; row++) {
+                    appearCount[val] += 1 - gic.possibleVals[val][row][col];
+                }
+                if (appearCount[val] == 2) {
+                    possible.add(val);
+                }
+            }
+            for (int val1 : possible) {
+                for (int val2 : possible) {
+                    if (val1 != val2) {
+                        int row1 = -1;
+                        int row2 = -1;
+                        for (int row = 0; row < boardSize; row++) {
+                            if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                if (row1 == -1) {
+                                    row1 = row;
+                                } else {
+                                    row2 = row;
+                                }
+                            }
+                        }
+                        if (row2 != -1) {
+                            for (int val = 1; val <= boardSize; val++) {
+                                if (val != val1 && val != val2) {
+                                    gic.possibleVals[val][row1][col] = 1;
+                                    gic.possibleVals[val][row2][col] = 1;
+                                }
+                            }
+                            gic.countImpossibleVals(row1, col);
+                            gic.countImpossibleVals(row2, col);
+                            hiddenDoubleChecked[val1][1][col] = 1;
+                            hiddenDoubleChecked[val2][1][col] = 1;
+                            hiddenDoubleCount++;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Grid
+        int gridCount = boardSize / gridSize;
+        for (int i = 0; i < gridCount; i++) {
+            for (int j = 0; j < gridCount; j++) {
+                int initialRow = i * 3;
+                int initialCol = j * 3;
+                int[] appearCount = new int[boardSize + 1];
+                ArrayList<Integer> possible = new ArrayList<>();
+                for (int val = 1; val <= boardSize; val++) {
+                    if (hiddenDoubleChecked[val][2][i * 3 + j] == 1) {
+                        continue;
+                    }
+                    for (int row = initialRow; row < initialRow + gridSize; row++) {
+                        for (int col = initialCol; col < initialCol + gridSize; col++) {
+                            appearCount[val] += 1 - gic.possibleVals[val][row][col];
+                        }
+                    }
+                    if (appearCount[val] == 2) {
+                        possible.add(val);
+                    }
+                }
+                for (int val1 : possible) {
+                    for (int val2 : possible) {
+                        if (val1 != val2) {
+                            int row1 = -1;
+                            int row2 = -1;
+                            int col1 = -1;
+                            int col2 = -1;
+                            for (int row = initialRow; row < initialRow + gridSize; row++) {
+                                for (int col = initialCol; col < initialCol + gridSize; col++) {
+                                    if (gic.possibleVals[val1][row][col] == 0 && gic.possibleVals[val2][row][col] == 0) {
+                                        if (col1 == -1) {
+                                            row1 = row;
+                                            col1 = col;
+                                        } else {
+                                            row2 = row;
+                                            col2 = col;
+                                        }
+                                    }
+                                }
+                            }
+                            if (col2 != -1) {
+                                for (int val = 1; val <= boardSize; val++) {
+                                    if (val != val1 && val != val2) {
+                                        gic.possibleVals[val][row1][col1] = 1;
+                                        gic.possibleVals[val][row2][col2] = 1;
+                                    }
+                                }
+                                gic.countImpossibleVals(row1, col1);
+                                gic.countImpossibleVals(row2, col2);
+                                hiddenDoubleChecked[val1][0][i * 3 + j] = 1;
+                                hiddenDoubleChecked[val2][0][i * 3 + j] = 1;
+                                hiddenDoubleCount++;
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private boolean lockedCandidate() {
 //        System.out.println("LOCKED CANDIDATE");
@@ -528,10 +860,10 @@ public class HumanSimulationSolver extends SudokuSolver {
     public int[][] humanSolve() {
         if (tryStrategy(1))
             return gic.board;
-        if (tryStrategy(2))
-            return gic.board;
-//        if (tryStrategy(3))
+//        if (tryStrategy(2))
 //            return gic.board;
+        if (tryStrategy(3))
+            return gic.board;
         return null;
     }
 
@@ -571,18 +903,16 @@ public class HumanSimulationSolver extends SudokuSolver {
         ArrayList<Boolean> resultList = new ArrayList<>();
         switch (level) {
             case 3:
+//                resultList.add(hiddenTriple());
+                resultList.add(nakedTriple());
             case 2:
                 resultList.add(hiddenDouble());
                 resultList.add(nakedDouble());
                 resultList.add(lockedCandidate());
             case 1:
                 resultList.add(hiddenSingle());
-//                printArray(gic.board);
                 resultList.add(nakedSingle());
-//                printArray(gic.board);
             default:
-//                printArray(gic.board);
-//                System.out.println();
                 return resultList.contains(true);
         }
     }
