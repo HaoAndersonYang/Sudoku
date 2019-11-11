@@ -950,7 +950,6 @@ public class HumanSimulationSolver extends SudokuSolver {
                 resultList.add(hiddenDouble());
                 resultList.add(nakedDouble());
                 resultList.add(lockedCandidate());
-                System.out.println();
             case 1:
                 resultList.add(hiddenSingle());
                 resultList.add(nakedSingle());

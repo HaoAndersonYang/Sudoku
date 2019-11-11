@@ -36,7 +36,7 @@ public class Runner {
 //                    BasicBackTrackSolver BBTS = new BasicBackTrackSolver(board.length);
 
                     HumanSimulationSolver HSS = new HumanSimulationSolver(board.length);
-                    io.outputSolution(solveSudoku(board, HSS));
+                    io.outputSolution(solveSudoku(board, PBTS));
                     System.out.println();
                     System.out.println(commandLinePrompt);
                     break;
@@ -48,13 +48,14 @@ public class Runner {
                     PuzzleGenerator puzzleGenerator = new PuzzleGenerator();
                     puzzleGenerator.generatePuzzle();
                     HSS = new HumanSimulationSolver(puzzleGenerator.getPuzzle().length);
-                    int diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
+                    int[][] puzzle = puzzleGenerator.getPuzzle();
+                    int diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
                     while (diff != targetDiff) {
                         HSS = new HumanSimulationSolver(9);
                         puzzleGenerator = new PuzzleGenerator();
                         puzzleGenerator.generatePuzzle();
-                        printArray(puzzleGenerator.getPuzzle());
-                        diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
+                        puzzle = puzzleGenerator.getPuzzle();
+                        diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
                     }
                     io = new InputOutput(fileName, 9);
                     io.outputPuzzle(puzzleGenerator.getPuzzle());

@@ -16,18 +16,15 @@ public class GameInformatonContainer {
     }
 
     public GameInformatonContainer clone() {
-        int[][] nb = new int[boardSize][boardSize];
+        int[][] nb = Util.arrayCopy(board);
 
         int[][][] np = new int[boardSize + 1][boardSize][boardSize];
         // 0 is not checked
-        int[][] nc = new int[boardSize][boardSize];
+        int[][] nc = Util.arrayCopy(checked);
         // impossibleValCount is the number of impossible vals of a cell
-        int[][] nv = new int[boardSize][boardSize];
+        int[][] nv = Util.arrayCopy(impossibleValCount);
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
-                nb[i][j] = board[i][j];
-                nc[i][j] = checked[i][j];
-                nv[i][j] = impossibleValCount[i][j];
                 for (int k = 1; k <= boardSize; k++) {
                     np[k][i][j] = possibleVals[k][i][j];
                 }

@@ -14,9 +14,10 @@ public class PuzzleGenerator {
     }
 
     public int[][] generatePuzzle() {
-        int[][] board = generateCompleteBoard();
-        return generatePuzzlefromBoard(board);
+        generateCompleteBoard();
+        return generatePuzzlefromBoard();
     }
+
 
     public int[][] getSolution() {
         return solution;
@@ -33,10 +34,11 @@ public class PuzzleGenerator {
                 }
             }
         }
-        printArray(solution);
-        System.out.println();
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
         solution = PBTS.solve(solution);
+        System.out.println("SOLUTIONdown");
+        printArray(solution);
+        System.out.println("SOLUTIONup");
         return solution;
     }
 
@@ -62,18 +64,20 @@ public class PuzzleGenerator {
         return copy;
     }
 
-    public int[][] generatePuzzlefromBoard(int[][] board) {
+    public int[][] generatePuzzlefromBoard() {
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
-        puzzle = copyArray(board);
+        puzzle = Util.arrayCopy(solution);
         int temp, x, y;
         do {
             x = (int) (Math.random() * 9);
             y = (int) (Math.random() * 9);
             temp = puzzle[x][y];
             puzzle[x][y] = 0;
-        } while (PBTS.hasUniqueSolution(puzzle));
+            PBTS = new PreprocessBackTrackSolver(9);
+        } while (PBTS.hasUniqueSolution(Util.arrayCopy(puzzle)));
         System.out.println("*************PUZZLE*********");
         System.out.println(x + " " + y);
+        printArray(puzzle);
         puzzle[x][y] = temp;
         return puzzle;
     }
