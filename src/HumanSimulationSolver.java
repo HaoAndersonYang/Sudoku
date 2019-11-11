@@ -13,6 +13,8 @@ public class HumanSimulationSolver extends SudokuSolver {
     private int nakedTripleCount = 0;
     private int hiddenTripleCount = 0;
 
+    private int levelUsed = 4;
+
     private int[][] lockedCandidateChecked;//grid, val
     private int[][][] nakedDoubleChecked;//val, (row/col/grid), pos
     private int[][][] hiddenDoubleChecked;//val, (row/col/grid), pos
@@ -33,6 +35,11 @@ public class HumanSimulationSolver extends SudokuSolver {
     public int[][] solve(int[][] board) {
         gic = preProcess(board);
         return humanSolve();
+    }
+
+    public int difficultyLevel(int[][] board) {
+        solve(board);
+        return levelUsed;
     }
 
 
@@ -427,8 +434,8 @@ public class HumanSimulationSolver extends SudokuSolver {
                                 }
                                 gic.countImpossibleVals(row1, col1);
                                 gic.countImpossibleVals(row2, col2);
-                                hiddenDoubleChecked[val1][0][i * 3 + j] = 1;
-                                hiddenDoubleChecked[val2][0][i * 3 + j] = 1;
+                                hiddenDoubleChecked[val1][2][i * 3 + j] = 1;
+                                hiddenDoubleChecked[val2][2][i * 3 + j] = 1;
                                 hiddenDoubleCount++;
                                 return true;
                             }
@@ -598,11 +605,11 @@ public class HumanSimulationSolver extends SudokuSolver {
                             }
                             if (candidateSet.size() == 3) {
                                 int rowpos1 = indexArray[p].charAt(0) - '0';
-                                int rowpos2 = indexArray[q].charAt(1) - '0';
-                                int rowpos3 = indexArray[k].charAt(2) - '0';
-                                int colpos1 = indexArray[p].charAt(0) - '0';
+                                int rowpos2 = indexArray[q].charAt(0) - '0';
+                                int rowpos3 = indexArray[k].charAt(0) - '0';
+                                int colpos1 = indexArray[p].charAt(1) - '0';
                                 int colpos2 = indexArray[q].charAt(1) - '0';
-                                int colpos3 = indexArray[k].charAt(2) - '0';
+                                int colpos3 = indexArray[k].charAt(1) - '0';
 
                                 for (int eliminateRow = initialRow; eliminateRow < initialRow + gridSize; eliminateRow++) {
                                     for (int eliminateCol = initialCol; eliminateCol < initialCol + gridSize; eliminateCol++) {
@@ -914,13 +921,15 @@ public class HumanSimulationSolver extends SudokuSolver {
                 sb.append("Naked Single Strategy Count: ").append(nakedSingleCount).append("\n");
             default:
                 boolean res = findNextZero(gic.board) == null;
-                System.out.println(sb.toString());
+                System.out.print(sb.toString());
                 if (res) {
                     System.out.println("Solved by using up to LEVEL " + level + " Strategies.");
+                    levelUsed = level;
                 } else {
                     System.out.println("LEVEL " + level + " Strategies cannot solve the puzzle.");
-                    printArray(gic.board);
+//                    printArray(gic.board);
                 }
+                System.out.println("**************************************");
                 return res;
         }
     }
@@ -941,6 +950,7 @@ public class HumanSimulationSolver extends SudokuSolver {
                 resultList.add(hiddenDouble());
                 resultList.add(nakedDouble());
                 resultList.add(lockedCandidate());
+                System.out.println();
             case 1:
                 resultList.add(hiddenSingle());
                 resultList.add(nakedSingle());

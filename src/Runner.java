@@ -7,6 +7,7 @@ public class Runner {
     private final static String enterFileName = "Enter the filename for the puzzle, enter \"q\" for quit.";
     private final static String filenotExist = "File not exist!";
     private final static String invalidCommand = "Invalid command!";
+    private final static String inputDifficulty = "Enter difficulty (from 1 to 4)";
 
     public static void main(String[] args) {
         System.out.println(commandLinePrompt);
@@ -42,7 +43,19 @@ public class Runner {
                 case "g":
                     System.out.println(enterFileName);
                     fileName = s.next();
+                    System.out.println(inputDifficulty);
+                    int targetDiff = s.nextInt();
                     PuzzleGenerator puzzleGenerator = new PuzzleGenerator();
+                    puzzleGenerator.generatePuzzle();
+                    HSS = new HumanSimulationSolver(puzzleGenerator.getPuzzle().length);
+                    int diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
+                    while (diff != targetDiff) {
+                        HSS = new HumanSimulationSolver(9);
+                        puzzleGenerator = new PuzzleGenerator();
+                        puzzleGenerator.generatePuzzle();
+                        printArray(puzzleGenerator.getPuzzle());
+                        diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
+                    }
                     io = new InputOutput(fileName, 9);
                     io.outputPuzzle(puzzleGenerator.getPuzzle());
                     io.outputSolution(puzzleGenerator.getSolution());
@@ -56,6 +69,20 @@ public class Runner {
                     System.out.println(commandLinePrompt);
                     break;
             }
+        }
+    }
+
+    public static void printArray(int[][] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                int val = array[i][j];
+                if (val == 0) {
+                    System.out.print("- ");
+                } else {
+                    System.out.print(val + " ");
+                }
+            }
+            System.out.println();
         }
     }
 

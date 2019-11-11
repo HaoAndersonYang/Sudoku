@@ -33,6 +33,8 @@ public class PuzzleGenerator {
                 }
             }
         }
+        printArray(solution);
+        System.out.println();
         PreprocessBackTrackSolver PBTS = new PreprocessBackTrackSolver(9);
         solution = PBTS.solve(solution);
         return solution;
@@ -70,7 +72,8 @@ public class PuzzleGenerator {
             temp = puzzle[x][y];
             puzzle[x][y] = 0;
         } while (PBTS.hasUniqueSolution(puzzle));
-//        System.out.println("*************PUZZLE*********");
+        System.out.println("*************PUZZLE*********");
+        System.out.println(x + " " + y);
         puzzle[x][y] = temp;
         return puzzle;
     }
