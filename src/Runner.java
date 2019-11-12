@@ -36,7 +36,7 @@ public class Runner {
 //                    BasicBackTrackSolver BBTS = new BasicBackTrackSolver(board.length);
 
                     HumanSimulationSolver HSS = new HumanSimulationSolver(board.length);
-                    io.outputSolution(solveSudoku(board, PBTS));
+                    io.outputSolution(solveSudoku(board, HSS));
                     System.out.println();
                     System.out.println(commandLinePrompt);
                     break;
@@ -61,6 +61,26 @@ public class Runner {
                     io.outputPuzzle(puzzleGenerator.getPuzzle());
                     io.outputSolution(puzzleGenerator.getSolution());
                     System.out.println();
+                    System.out.println(commandLinePrompt);
+                    break;
+                case "g1000":
+                    int[] difficultyCount = new int[4];
+                    for (targetDiff = 1; targetDiff < 5; targetDiff++) {
+                        for (int i = 0; i < 10; i++) {
+                            diff = -1;
+                            while (diff != targetDiff) {
+                                HSS = new HumanSimulationSolver(9);
+                                puzzleGenerator = new PuzzleGenerator();
+                                puzzleGenerator.generatePuzzle();
+                                diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
+                                difficultyCount[targetDiff - 1]++;
+                            }
+                        }
+                    }
+                    System.out.println("LEVEL1 Count: " + difficultyCount[0]);
+                    System.out.println("LEVEL2 Count: " + difficultyCount[1]);
+                    System.out.println("LEVEL3 Count: " + difficultyCount[2]);
+                    System.out.println("LEVEL4 Count: " + difficultyCount[3]);
                     System.out.println(commandLinePrompt);
                     break;
                 case "q":

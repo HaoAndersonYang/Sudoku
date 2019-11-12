@@ -913,23 +913,24 @@ public class HumanSimulationSolver extends SudokuSolver {
                 sb.append("Hidden Triple Strategy Count: ").append(hiddenTripleCount).append("\n");
                 sb.append("Naked Triple Strategy Count: ").append(nakedTripleCount).append("\n");
             case 2:
+                sb.append("Locked Candidate Strategy Count: ").append(lockedCandidateCount).append("\n");
                 sb.append("Hidden Double Strategy Count: ").append(hiddenDoubleCount).append("\n");
                 sb.append("Naked Double Strategy Count: ").append(nakedDoubleCount).append("\n");
-                sb.append("Locked Candidate Strategy Count: ").append(lockedCandidateCount).append("\n");
             case 1:
                 sb.append("Hidden Single Strategy Count: ").append(hiddenSingleCount).append("\n");
                 sb.append("Naked Single Strategy Count: ").append(nakedSingleCount).append("\n");
             default:
                 boolean res = findNextZero(gic.board) == null;
-                System.out.print(sb.toString());
                 if (res) {
+                    System.out.println("**************************************");
                     System.out.println("Solved by using up to LEVEL " + level + " Strategies.");
+                    System.out.print(sb.toString());
+                    System.out.println("**************************************");
                     levelUsed = level;
                 } else {
                     System.out.println("LEVEL " + level + " Strategies cannot solve the puzzle.");
 //                    printArray(gic.board);
                 }
-                System.out.println("**************************************");
                 return res;
         }
     }
@@ -947,9 +948,9 @@ public class HumanSimulationSolver extends SudokuSolver {
                 resultList.add(hiddenTriple());
                 resultList.add(nakedTriple());
             case 2:
+                resultList.add(lockedCandidate());
                 resultList.add(hiddenDouble());
                 resultList.add(nakedDouble());
-                resultList.add(lockedCandidate());
             case 1:
                 resultList.add(hiddenSingle());
                 resultList.add(nakedSingle());
