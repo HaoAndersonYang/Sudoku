@@ -16,7 +16,7 @@ public class InputOutput {
 
     public InputOutput(String fileName, int size) {
         System.out.println("Creating puzzle file and solution file for Sudoku of size " + size + ".");
-        puzzleFileName = fileName;
+        puzzleFileName = System.getProperty("user.dir") + "\\" + fileName;
         solutionFileName = fileName.substring(0, fileName.length() - 4) + "Solution.txt";
     }
 
