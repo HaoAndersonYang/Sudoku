@@ -76,26 +76,6 @@ public class PuzzleGenerator {
         return puzzle;
     }
 
-    private int[][] rotation(int[][] input) {
-        int[][] res = Util.arrayCopy(input);
-        return res;
-    }
-
-    private int[][] mirror(int[][] input) {
-        int[][] res = Util.arrayCopy(input);
-        return res;
-    }
-
-    private int[][] transposition(int[][] input) {
-        int[][] res = Util.arrayCopy(input);
-        return res;
-    }
-
-    private int[][] ciphering(int[][] input) {
-        int[][] res = Util.arrayCopy(input);
-        return res;
-    }
-
 
     private ArrayList<Integer> generateRandomSequence() {
         ArrayList<Integer> randomSequence = new ArrayList<>();

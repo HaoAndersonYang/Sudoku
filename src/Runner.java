@@ -65,22 +65,63 @@ public class Runner {
                     break;
                 case "g1000":
                     int[] difficultyCount = new int[4];
-                    for (targetDiff = 1; targetDiff < 5; targetDiff++) {
-                        for (int i = 0; i < 10; i++) {
-                            diff = -1;
-                            while (diff != targetDiff) {
-                                HSS = new HumanSimulationSolver(9);
-                                puzzleGenerator = new PuzzleGenerator();
-                                puzzleGenerator.generatePuzzle();
-                                diff = HSS.difficultyLevel(puzzleGenerator.getPuzzle());
-                                difficultyCount[targetDiff - 1]++;
-                            }
+                    for (int i = 0; i < 1000; i++) {
+                        HSS = new HumanSimulationSolver(9);
+                        puzzleGenerator = new PuzzleGenerator();
+                        puzzleGenerator.generatePuzzle();
+                        puzzle = puzzleGenerator.getPuzzle();
+                        int[][] modpuzzle = Util.rotation(puzzle);
+                        diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
+                        HSS = new HumanSimulationSolver(9);
+                        int diff2 = HSS.difficultyLevel(modpuzzle);
+                        if (diff2 != diff) {
+                            difficultyCount[0]++;
                         }
                     }
-                    System.out.println("LEVEL1 Count: " + difficultyCount[0]);
-                    System.out.println("LEVEL2 Count: " + difficultyCount[1]);
-                    System.out.println("LEVEL3 Count: " + difficultyCount[2]);
-                    System.out.println("LEVEL4 Count: " + difficultyCount[3]);
+                    for (int i = 0; i < 1000; i++) {
+                        HSS = new HumanSimulationSolver(9);
+                        puzzleGenerator = new PuzzleGenerator();
+                        puzzleGenerator.generatePuzzle();
+                        puzzle = puzzleGenerator.getPuzzle();
+                        int[][] modpuzzle = Util.mirror(puzzle);
+                        diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
+                        HSS = new HumanSimulationSolver(9);
+                        int diff2 = HSS.difficultyLevel(modpuzzle);
+                        if (diff2 != diff) {
+                            difficultyCount[0]++;
+                        }
+                    }
+                    for (int i = 0; i < 1000; i++) {
+                        HSS = new HumanSimulationSolver(9);
+                        puzzleGenerator = new PuzzleGenerator();
+                        puzzleGenerator.generatePuzzle();
+                        puzzle = puzzleGenerator.getPuzzle();
+                        int[][] modpuzzle = Util.transposition(puzzle);
+                        diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
+                        HSS = new HumanSimulationSolver(9);
+                        int diff2 = HSS.difficultyLevel(modpuzzle);
+                        if (diff2 != diff) {
+                            difficultyCount[0]++;
+                        }
+                    }
+                    for (int i = 0; i < 1000; i++) {
+                        HSS = new HumanSimulationSolver(9);
+                        puzzleGenerator = new PuzzleGenerator();
+                        puzzleGenerator.generatePuzzle();
+                        puzzle = puzzleGenerator.getPuzzle();
+                        int[][] modpuzzle = Util.ciphering(puzzle);
+                        diff = HSS.difficultyLevel(Util.arrayCopy(puzzle));
+                        HSS = new HumanSimulationSolver(9);
+                        int diff2 = HSS.difficultyLevel(modpuzzle);
+                        if (diff2 != diff) {
+                            difficultyCount[0]++;
+                        }
+                    }
+                    System.out.println(difficultyCount[0]);
+                    System.out.println(difficultyCount[1]);
+                    System.out.println(difficultyCount[2]);
+                    System.out.println(difficultyCount[3]);
+
                     System.out.println(commandLinePrompt);
                     break;
                 case "q":
